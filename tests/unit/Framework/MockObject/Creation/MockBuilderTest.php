@@ -18,6 +18,7 @@ use PHPUnit\Framework\Attributes\Medium;
 use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\TestFixture\MockObject\AbstractClass;
+use PHPUnit\TestFixture\MockObject\ClassCallingMethodInConstructor;
 use PHPUnit\TestFixture\MockObject\ExtendableClass;
 use PHPUnit\TestFixture\MockObject\InterfaceWithReturnTypeDeclaration;
 use PHPUnit\TestFixture\MockObject\TraitWithConcreteAndAbstractMethod;
@@ -103,5 +104,16 @@ final class MockBuilderTest extends TestCase
         $mock->expects($this->once())->method('doSomethingElse')->willReturn(true);
 
         $this->assertTrue($mock->doSomething());
+    }
+
+    #[TestDox('onlyMethods() mocked methods can be called within the original constructor')]
+    public function testOnlyMethodCalledInConstructorWorks(): void
+    {
+        $testClassMock = $this->getMockBuilder(ClassCallingMethodInConstructor::class)
+            ->onlyMethods(['reset'])
+            ->getMock();
+
+        $testClassMock->expects($this::once())->method('reset');
+        $testClassMock->second();
     }
 }
